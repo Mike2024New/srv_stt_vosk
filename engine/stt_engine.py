@@ -16,7 +16,7 @@ class Engine:
         self._recognizer = KaldiRecognizer(self._model, parameters.samplerate)
         self._shut_up.disable()
 
-    async def recognized(self, chunk):
+    def recognized(self, chunk):
         """Может использоваться как callback"""
         if self._recognizer.AcceptWaveform(chunk):
             result = json.loads(self._recognizer.Result())

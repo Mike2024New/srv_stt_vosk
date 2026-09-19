@@ -1,4 +1,5 @@
 import asyncio
+from queue import Empty
 from fastapi import APIRouter, WebSocket
 from starlette.websockets import WebSocketDisconnect
 from config import Parameters
@@ -48,14 +49,12 @@ def routers_factory(engine: Engine) -> APIRouter:
                     await websocket.close()
                     break
                 try:
-                    res = await asyncio.wait_for(engine.queue.get(), timeout=0.5)
+                    res = engine.queue.get_nowait()
                     if res is None:
                         break
                     await websocket.send_json(res)
-                except asyncio.TimeoutError:
-                    pass
-                except asyncio.CancelledError:
-                    pass
+                except Empty:
+                    await asyncio.sleep(0.05)
 
         except WebSocketDisconnect:
             return
