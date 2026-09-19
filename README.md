@@ -56,8 +56,8 @@
 ### 1. Клонирование
 
 ```bash
-git clone git@github.com:Mike2024New/stt_vosk_offline.git stt_vosk
-cd stt_vosk
+git clone https://github.com/Mike2024New/srv_stt_vosk srv_stt_vosk
+cd srv_stt_vosk
 ```
 
 ### 2. Создать виртуальное окружение
