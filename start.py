@@ -1,39 +1,25 @@
 import asyncio, sys, subprocess
-import warnings, json
-from pathlib import Path
+import warnings
 
 """
 Пусковой стартовый скрипт, для сборки зависимостей и скачивания необходимых компонентов.
 Важно! Перед запуском должно быть создано виртуальное окружение, и название папки должно быть .venv
 """
-steps = 5
-lock = asyncio.Lock()
-
-
-async def installer_log(step: int, description: str):
-    """Запись текущей операции в json (для интеграции с лаунчером)"""
-    print(f'{step}.{description}')
-    async with lock:
-        with open(file=Path('installer.json'), mode='w', encoding='utf8') as f:
-            f.write(
-                json.dumps(
-                    {'step': step, 'steps': steps, 'description': description},
-                    indent=2,
-                    ensure_ascii=False,
-                )
-            )
 
 
 async def start():
-    await installer_log(step=1, description='установка uv')
+    print(f'1. установка uv', flush=True)
     cmd = [sys.executable, '-m', 'pip', 'install', 'uv']
     subprocess.run(cmd, shell=False)
+    print(f'#progress 20', flush=True)  # для progress бара
 
-    await installer_log(step=2, description='установка библиотек')
+    print(f'2. установка библиотек', flush=True)
     cmd = [sys.executable, '-m', 'uv', 'sync']
     subprocess.run(cmd, shell=False)
+    print(f'#progress 40')  # для progress бара
 
-    await installer_log(step=3, description='загрузка моделей')
+    print(f'3. загрузка моделей', flush=True)
+    print('#download start', flush=True)  # сообщить о начале установки для popen парсера
     from infrastructure_http_clients import file_downloader, DownloadFileType
     from config import settings
 
@@ -60,8 +46,11 @@ async def start():
         ),
     ]
     await file_downloader(download_list=download_list, console_progress_bar=True)
+    print('#download end', flush=True)  # сообщить о том что загрузка файлов завершена
+    print('', flush=True)  # перевод пустой строки
+    print(f'#progress 60', flush=True)  # для progress бара
 
-    await installer_log(step=4, description='распаковка моделей')
+    print(f'4. распаковка моделей', flush=True)
     import zipfile
     for model in ('vosk-model-small-ru-0.22.zip', 'vosk-model-small-en-us-0.15.zip'):
         zip_path = models_dir / model
@@ -72,10 +61,12 @@ async def start():
         with zipfile.ZipFile(zip_path, 'r') as z:
             z.extractall(models_dir)
         zip_path.unlink()
+    print(f'#progress 80', flush=True)  # для progress бара
 
-    await installer_log(step=5, description='сборка .exe/bin')
+    print(f'5. сборка .exe/bin', flush=True)
     from build import build, parameters
     build(parameters=parameters)
+    print(f'#progress 100', flush=True)  # для progress бара
 
 
 if __name__ == '__main__':

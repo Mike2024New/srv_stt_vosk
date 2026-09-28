@@ -44,6 +44,7 @@ info.txt
 
 # дополнительные файлы
 pids.txt
+helper.*
 
 # Системные файлы Windows
 Thumbs.db
