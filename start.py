@@ -17,14 +17,16 @@ args = sys.argv
 
 async def start():
     if 'sync' in args or 'all' in args:
-        print(f'Установка uv и зависимостей', flush=True)
+        if 'all' in args:
+            print(f'Установка uv и зависимостей', flush=True)
         cmd = [sys.executable, '-m', 'pip', 'install', 'uv']
         subprocess.run(cmd, shell=False)
         cmd = [sys.executable, '-m', 'uv', 'sync']
         subprocess.run(cmd, shell=False)
 
     if 'dwn' in args or 'all' in args:
-        print(f'Загрузка дополнительных материалов', flush=True)
+        if 'all' in args:
+            print(f'Загрузка дополнительных материалов', flush=True)
         from infrastructure_http_clients import file_downloader, DownloadFileType
         from config import settings
 
@@ -63,7 +65,8 @@ async def start():
             zip_path.unlink()
 
     if 'build' in args or 'all' in args:
-        print(f'Сборка .exe/bin', flush=True)
+        if 'all' in args:
+            print(f'Сборка .exe/bin', flush=True)
         from build import build, parameters
         build(parameters=parameters)
 
