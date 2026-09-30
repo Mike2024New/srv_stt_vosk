@@ -43,6 +43,8 @@ class Engine:
             res = self._stt_engine.recognized(chunk=chunk_bytes)
             if res.get('type') == 'result':
                 self.queue.put(res)
+            if res.get('type') == 'partial':
+                self.queue.put(res)
 
     async def stop(self):
         if self._running:

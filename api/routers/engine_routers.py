@@ -9,17 +9,6 @@ from engine.main import Engine
 def routers_factory(engine: Engine) -> APIRouter:
     router = APIRouter()
 
-    @router.get('/versions/')
-    async def versions():
-        import starlette, fastapi, uvicorn, sys
-        return {
-            'starlette': starlette.__version__,
-            'fastapi': fastapi.__version__,
-            'uvicorn': uvicorn.__version__,
-            'python': sys.version,
-            'frozen': getattr(sys, 'frozen', False),
-        }
-
     @router.get('/parameters/')
     def parameters():
         """Получить параметры модели. Узнать запущен ли движок."""
